@@ -8,7 +8,7 @@ Vue.use(BootstrapVue)
 Vue.config.productionTip = false
 
 export const HTTP = axios.create({
-  baseURL: 'https://localhost:5001/'
+  baseURL: 'http://image-sharing-api.azurewebsites.net'
 })
 
 new Vue({
