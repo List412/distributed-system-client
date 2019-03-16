@@ -23,7 +23,7 @@ const router = new VueRouter({
 Vue.config.productionTip = false
 
 export const HTTP = axios.create({
-  baseURL: 'https://image-sharing-api.azurewebsites.net'
+  baseURL: 'https://image-sharing-api-1.azurewebsites.net'
   // baseURL: 'https://localhost:5001'
 })
 
