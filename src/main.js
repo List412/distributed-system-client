@@ -2,8 +2,21 @@ import Vue from 'vue'
 import App from './App.vue'
 import axios from 'axios'
 import BootstrapVue from 'bootstrap-vue'
+import VueRouter from 'vue-router'
+import HelloWorld from "@/components/HelloWorld";
+import ServersStatus from "@/components/ServersStatus";
 
 Vue.use(BootstrapVue)
+Vue.use(VueRouter)
+
+const routes = [
+  { path: '/', component: HelloWorld },
+  { path: '/top-secret', component: ServersStatus }
+]
+
+const router = new VueRouter({
+  routes
+})
 
 Vue.config.productionTip = false
 
@@ -13,4 +26,5 @@ export const HTTP = axios.create({
 
 new Vue({
   render: h => h(App),
+  router,
 }).$mount('#app')

@@ -1,48 +1,23 @@
 <template>
   <div id="app">
-    <div class="container">
-      <form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">
-        <h1>Upload images</h1>
-        <div class="dropbox">
-          <input type="file" multiple :name="uploadFieldName" :disabled="isSaving" @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length"
-            accept="image/*" class="input-file">
-            <p v-if="isInitial">
-              Drag your file(s) here to begin<br> or click to browse
-            </p>
-            <p v-if="isSaving">
-              Uploading {{ fileCount }} files...
-            </p>
-        </div>
-      </form>
-      <!--SUCCESS-->
-      <div v-if="isSuccess">
-        <h2>Uploaded {{ uploadedFiles.length }} file(s) successfully.</h2>
-        <p>
-          <a href="javascript:void(0)" @click="reset()">Upload again</a>
-        </p>
-        <ul class="list-unstyled">
-          <li v-for="item in uploadedFiles">
-            <img :src="item.url" class="img-responsive img-thumbnail" :alt="item.originalName">
+    <b-nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+      <div>
+        <ul class="navbar-nav">
+          <li class="nav-item nav-link">
+            <router-link to="/">Home</router-link>
+          </li>
+          <li class="nav-item nav-link">
+            <router-link to="/top-secret">Servers</router-link>
           </li>
         </ul>
       </div>
-      <!--FAILED-->
-      <div v-if="isFailed">
-        <h2>Uploaded failed.</h2>
-        <p>
-          <a href="javascript:void(0)" @click="reset()">Try again</a>
-        </p>
-        <pre>{{ uploadError }}</pre>
-      </div>
-    </div>
-    <ServersStatus></ServersStatus>
+    </b-nav>
+    <router-view></router-view>
   </div>
 </template>
 
-
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-import ServersStatus from "@/components/ServersStatus";
+
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import { upload } from './file-upload.service';
@@ -51,10 +26,6 @@ import { upload } from './file-upload.service';
 
 export default {
     name: 'app',
-    components: {
-      ServersStatus,
-      HelloWorld
-    },
     data() {
       return {
         uploadedFiles: [],
@@ -128,35 +99,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 
-.dropbox {
-    outline: 2px dashed grey; /* the dash box */
-    outline-offset: -10px;
-    background: lightcyan;
-    color: dimgray;
-    padding: 10px 10px;
-    min-height: 200px; /* minimum height */
-    position: relative;
-    cursor: pointer;
-  }
 
-  .input-file {
-    opacity: 0; /* invisible but it's there! */
-    width: 100%;
-    height: 200px;
-    position: absolute;
-    cursor: pointer;
-  }
-
-  .dropbox:hover {
-    background: lightblue; /* when mouse over to the drop zone, change color */
-  }
-
-  .dropbox p {
-    font-size: 1.2em;
-    text-align: center;
-    padding: 50px 0;
-  }
 </style>

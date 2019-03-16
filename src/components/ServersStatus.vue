@@ -24,16 +24,16 @@
 </template>
 
 <script>
-    import {HTTP} from '../main'
+    import {HTTP} from '../main' // отсюда берется HTTP чтобы он существовал в этом файле.
     export default {
         name: "ServersStatus",
         data() {
-            return {
+            return { // тут всякие переменные обхявляются. Их можно использовать в template и во всяких методах и прочем.
                 servers: [],
                 host: ''
             }
         },
-        methods: {
+        methods: { // HTTP это axios, библиотека для http запросов.
             load_servers: function () {
                 HTTP.get('/status')
                     .then((result) => {
@@ -62,7 +62,7 @@
                 return pattern.test(str);
             }
     },
-        created() {
+        created() { // вызывается когда этот компоннт создается. Ну например когда страничка загружается.
             this.load_servers()
         }
     }
