@@ -146,8 +146,8 @@ export default {
                       Name: name, File: base64
                   })
                       .then(y => {
-                          this.url = 'https://share-image.herokuapp.com/#/pictures/' + y.data
-                        // this.url = 'http://localhost:8081/#/pictures/' + y.data
+                          this.url = 'https://share-image.herokuapp.com/#/' + y.data
+                        // this.url = 'http://localhost:8081/#/' + y.data
                           this.currentStatus = STATUS_SUCCESS
                       })
               })

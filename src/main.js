@@ -13,7 +13,7 @@ Vue.use(VueRouter)
 const routes = [
   { path: '/', component: HelloWorld },
   { path: '/top-secret', component: ServersStatus },
-  { path: '/pictures/:id', component: PictureViewComponent}
+  { path: '/:id', component: PictureViewComponent}
 ]
 
 const router = new VueRouter({
