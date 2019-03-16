@@ -147,6 +147,7 @@ export default {
                   })
                       .then(y => {
                           this.url = 'https://share-image.herokuapp.com/#/pictures/' + y.data
+                        // this.url = 'http://localhost:8081/#/pictures/' + y.data
                           this.currentStatus = STATUS_SUCCESS
                       })
               })
