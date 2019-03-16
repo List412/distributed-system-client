@@ -1,8 +1,8 @@
 <template>
-    <div>
+    <div id='server'>
         <div>
             <form class="form-group">
-                <label>server url
+                <label>You can manage host servers here
                     <input placeholder="https://site.ru" class="form-control" v-model="host">
                 </label>
                 <input type="button" value="Add" class="btn btn-primary" v-on:click="add_server">
@@ -69,6 +69,11 @@
 </script>
 
 <style scoped>
+
+#server
+{
+  margin-top:20px;
+}
 
 .btn-primary{
   margin-left:15px;
