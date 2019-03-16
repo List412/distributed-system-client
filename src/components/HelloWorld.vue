@@ -1,67 +1,72 @@
 <template>
   <div class="hello">
-    <!--<picture-input-->
-            <!--ref="pictureInput"-->
-            <!--accept="image/jpeg,image/png,image/jpg"-->
-            <!--width="600"-->
-            <!--height="400"-->
-            <!--button-class="btn"-->
-            <!--:custom-strings="{-->
-            <!--upload: '<h1> Loading </h1>',-->
-            <!--drag: 'Drag img here pls' }"-->
-            <!--@change="onChangeLoad"-->
-    <!--&gt;-->
+    <picture-input
+            ref="pictureInput"
+            accept="image/jpeg,image/png,image/jpg"
+            width="600"
+            height="400"
+            button-class="btn"
+            :custom-strings="{
+            upload: '<h1> Loading </h1>',
+            drag: 'Drag img here pls' }"
+            @change="onChangeLoad"
+    >
+    </picture-input>
 
-    <!--</picture-input>-->
+      <a v-if="isSuccess" :href="url">{{ url }}</a>
 
-    <div class="container">
-      <form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">
-        <h1>Upload images</h1>
-        <div class="dropbox">
-          <input type="file" multiple :name="uploadFieldName" :disabled="isSaving" @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length"
-                 accept="image/*" class="input-file">
-          <p v-if="isInitial">
-            Drag your file(s) here to begin<br> or click to browse
-          </p>
-          <p v-if="isSaving">
-            Uploading {{ fileCount }} files...
-          </p>
-        </div>
-      </form>
-      <!--SUCCESS-->
-      <div v-if="isSuccess">
-        <h2>Uploaded {{ uploadedFiles.length }} file(s) successfully.</h2>
-        <p>
-          <a href="javascript:void(0)" @click="reset()">Upload again</a>
-        </p>
-        <ul class="list-unstyled">
-          <li v-for="item in uploadedFiles">
-            <img :src="item.url" class="img-responsive img-thumbnail" :alt="item.originalName">
-          </li>
-        </ul>
-      </div>
-      <!--FAILED-->
-      <div v-if="isFailed">
-        <h2>Uploaded failed.</h2>
-        <p>
-          <a href="javascript:void(0)" @click="reset()">Try again</a>
-        </p>
-        <pre>{{ uploadError }}</pre>
-      </div>
-    </div>
+    <!--<div class="container">-->
+      <!--<form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">-->
+        <!--<h1>Upload images</h1>-->
+        <!--<div class="dropbox">-->
+          <!--<input type="file" multiple :name="uploadFieldName" :disabled="isSaving" @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length"-->
+                 <!--accept="image/*" class="input-file">-->
+          <!--<p v-if="isInitial">-->
+            <!--Drag your file(s) here to begin<br> or click to browse-->
+          <!--</p>-->
+          <!--<p v-if="isSaving">-->
+            <!--Uploading {{ fileCount }} files...-->
+          <!--</p>-->
+        <!--</div>-->
+      <!--</form>-->
+      <!--&lt;!&ndash;SUCCESS&ndash;&gt;-->
+      <!--<div v-if="isSuccess">-->
+        <!--<h2>Uploaded {{ uploadedFiles.length }} file(s) successfully.</h2>-->
+        <!--<p>-->
+          <!--<a href="javascript:void(0)" @click="reset()">Upload again</a>-->
+        <!--</p>-->
+        <!--<ul class="list-unstyled">-->
+          <!--<li v-for="item in uploadedFiles">-->
+            <!--<img :src="item.url" class="img-responsive img-thumbnail" :alt="item.originalName">-->
+          <!--</li>-->
+        <!--</ul>-->
+      <!--</div>-->
+      <!--&lt;!&ndash;FAILED&ndash;&gt;-->
+      <!--<div v-if="isFailed">-->
+        <!--<h2>Uploaded failed.</h2>-->
+        <!--<p>-->
+          <!--<a href="javascript:void(0)" @click="reset()">Try again</a>-->
+        <!--</p>-->
+        <!--<pre>{{ uploadError }}</pre>-->
+      <!--</div>-->
+    <!--</div>-->
   </div>
 </template>
 
 <script>
-  import { upload } from '../file-upload.service';
+  import { HTTP } from "@/main";
+
   const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3;
-// import PictureInput from "vue-picture-input"
+import PictureInput from "vue-picture-input"
 export default {
   name: 'HelloWorld',
-  // components: {PictureInput},
+  components: {PictureInput},
   data() {
     return {
       picture: {},
+      name: '',
+        url: '',
+      totalImages: [],
       uploadedFiles: [],
       uploadError: null,
       currentStatus: null,
@@ -86,9 +91,12 @@ export default {
   methods: {
     onChangeLoad() {
       console.log("New picture selected!");
+      this.currentStatus = STATUS_SAVING
       if (this.$refs.pictureInput.image) {
         console.log("Picture loaded.");
         this.picture = this.$refs.pictureInput.image
+          this.name = this.$refs.pictureInput.fileName
+          this.upload(this.name, this.picture)
       } else {
         console.log("FileReader API not supported: use the <form>, Luke!");
       }
@@ -102,44 +110,47 @@ export default {
     save: function (name, base64) {
       // upload data to the server
       this.currentStatus = STATUS_SAVING;
-
-      upload(name, base64)
-              .then(x => {
-                this.uploadedFiles = [].concat(x);
-                this.currentStatus = STATUS_SUCCESS;
-              })
-              .catch(err => {
-                this.uploadError = err.response;
-                this.currentStatus = STATUS_FAILED;
-              });
     },
-    filesChange(fieldName, fileList) {
+
+    filesChange: async function (fieldName, fileList) {
 
       if (!fileList.length) return;
       this.fileCount = fileList.length
 
       for (let i = 0; i < fileList.length; i++) {
-        this.encodeImage(fileList[i])
+        let file = await this.getBase64(fileList[i])
+
+        this.upload(file.name, file.base64).then(
+            this.pushto(file)
+        )
       }
     },
-    encodeImage: function (element) {
-      var file = element;
-      var reader = new FileReader();
-      reader.onloadend = function() {
-        // this.save(file, reader.result)
-        console.log(file.name)
-        upload(file.name, reader.result)
-                .then(x => {
-                  this.uploadedFiles = [].concat(x);
-                  this.currentStatus = STATUS_SUCCESS;
-                })
-                .catch(err => {
-                  this.uploadError = err.response;
-                  this.currentStatus = STATUS_FAILED;
-                });
+      getBase64: function (file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => {
+              let encoded = reader.result.replace(/^data:(.*;base64,)?/, '');
+              if ((encoded.length % 4) > 0) {
+                  encoded += '='.repeat(4 - (encoded.length % 4));
+              }
+              resolve({name: file.name, base64: encoded});
+          };
+          reader.onerror = error => reject(error);
+      });
+    },
+      upload: async function(name, base64) {
+          return HTTP.get('/api/server')
+              .then(x => {
+                  return HTTP.post(x.data + '/api/pictures', {
+                      Name: name, File: base64
+                  })
+                      .then(y => {
+                          this.url = 'https://share-image.herokuapp.com/#/pictures/' + y.data
+                          this.currentStatus = STATUS_SUCCESS
+                      })
+              })
       }
-      reader.readAsDataURL(file);
-    }
   },
   mounted() {
     this.reset();
