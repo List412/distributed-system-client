@@ -1,15 +1,10 @@
-import * as axios from 'axios';
+import {HTTP} from './main'
 
-const BASE_URL = 'http://image-sharing-api.azurewebsites.net';
-
-function upload(formData) {
-    const url = `${BASE_URL}/photos/upload`;
-    return axios.post(url, formData)
-        // get data
+function upload(name, base64) {
+    return HTTP.post('/api/pictures', {
+        Name: name, File: base64
+    })
         .then(x => x.data)
-        // add url field
-        .then(x => x.map(img => Object.assign({},
-            img, { url: `${BASE_URL}/images/${img.id}` })));
 }
 
 export { upload }

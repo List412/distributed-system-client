@@ -1,6 +1,5 @@
 <template>
   <div class="hello">
-    <h1>Share pls</h1>
     <!--<picture-input-->
             <!--ref="pictureInput"-->
             <!--accept="image/jpeg,image/png,image/jpg"-->
@@ -56,17 +55,18 @@
 <script>
   import { upload } from '../file-upload.service';
   const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3;
-import PictureInput from "vue-picture-input";
+// import PictureInput from "vue-picture-input"
 export default {
   name: 'HelloWorld',
-  components: {PictureInput},
+  // components: {PictureInput},
   data() {
     return {
       picture: {},
       uploadedFiles: [],
       uploadError: null,
       currentStatus: null,
-      uploadFieldName: 'photos'
+      uploadFieldName: 'photos',
+      fileCount: 0,
     };
   },
   computed: {
@@ -99,11 +99,11 @@ export default {
       this.uploadedFiles = [];
       this.uploadError = null;
     },
-    save(formData) {
+    save: function (name, base64) {
       // upload data to the server
       this.currentStatus = STATUS_SAVING;
 
-      upload(formData)
+      upload(name, base64)
               .then(x => {
                 this.uploadedFiles = [].concat(x);
                 this.currentStatus = STATUS_SUCCESS;
@@ -114,20 +114,31 @@ export default {
               });
     },
     filesChange(fieldName, fileList) {
-      // handle file changes
-      const formData = new FormData();
 
       if (!fileList.length) return;
+      this.fileCount = fileList.length
 
-      // append the files to FormData
-      Array
-              .from(Array(fileList.length).keys())
-              .map(x => {
-                formData.append(fieldName, fileList[x], fileList[x].name);
-              });
-
-      // save it
-      this.save(formData);
+      for (let i = 0; i < fileList.length; i++) {
+        this.encodeImage(fileList[i])
+      }
+    },
+    encodeImage: function (element) {
+      var file = element;
+      var reader = new FileReader();
+      reader.onloadend = function() {
+        // this.save(file, reader.result)
+        console.log(file.name)
+        upload(file.name, reader.result)
+                .then(x => {
+                  this.uploadedFiles = [].concat(x);
+                  this.currentStatus = STATUS_SUCCESS;
+                })
+                .catch(err => {
+                  this.uploadError = err.response;
+                  this.currentStatus = STATUS_FAILED;
+                });
+      }
+      reader.readAsDataURL(file);
     }
   },
   mounted() {
