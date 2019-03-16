@@ -10,9 +10,38 @@
         </div>
         <div id="server-list">
           <table>
+            <tr>
+              <th>
+                Address
+              </th>
+              <th>
+                Active
+              </th>
+              <th>
+                Last activity
+              </th>
+              <th>
+                Load
+              </th>
+              <th>
+                Ping
+              </th>
+            </tr>
             <tr v-for="item in servers">
               <td>
                 {{ item.address }}
+              </td>
+              <td>
+                {{ item.isActive }}
+              </td>
+              <td>
+                {{ item.last }}
+              </td>
+              <td>
+                {{ item.load }}
+              </td>
+              <td>
+                {{ item.ping }}
               </td>
               <td>
                 <button class="btn-danger" v-on:click="delete_server(item.id)">Delete</button>
@@ -84,8 +113,8 @@
   margin:auto;
 }
 
-#server-list>table>tr>td
+#server-list>table>tr>td, #server-list>table>tr>th
 {
-  padding: 5px;
+  padding: 10px;
 }
 </style>
