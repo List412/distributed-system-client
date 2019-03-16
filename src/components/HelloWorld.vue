@@ -140,9 +140,7 @@ export default {
       });
     },
       upload: async function(name, base64) {
-          return HTTP.get('/api/server')
-              .then(x => {
-                  return HTTP.post(x.data + '/api/pictures', {
+                  return HTTP.post('/api/pictures', {
                       Name: name, File: base64
                   })
                       .then(y => {
@@ -150,7 +148,6 @@ export default {
                         // this.url = 'http://localhost:8081/#/' + y.data
                           this.currentStatus = STATUS_SUCCESS
                       })
-              })
       }
   },
   mounted() {
