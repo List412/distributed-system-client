@@ -8,9 +8,17 @@
                 <input type="button" value="Add" class="btn btn-primary" v-on:click="add_server">
             </form>
         </div>
-        <div v-for="item in servers">
-            <li>{{ item.address }}</li>
-            <button class="btn-danger" v-on:click="delete_server(item.id)">Delete</button>
+        <div id="server-list">
+          <table>
+            <tr v-for="item in servers">
+              <td>
+                {{ item.address }}
+              </td>
+              <td>
+                <button class="btn-danger" v-on:click="delete_server(item.id)">Delete</button>
+              </td>
+            </tr>
+          </table>
         </div>
     </div>
 </template>
@@ -62,4 +70,17 @@
 
 <style scoped>
 
+.btn-primary{
+  margin-left:15px;
+}
+
+#server-list>table
+{
+  margin:auto;
+}
+
+#server-list>table>tr>td
+{
+  padding: 5px;
+}
 </style>
