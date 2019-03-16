@@ -16,7 +16,7 @@
             load: function () {
                 return HTTP.get('/api/pictures/'+this.$route.params.id)
                     .then (x => {
-                    this.imageBytes = JSON.parse(x.data).file
+                    this.imageBytes = x.data.file
                     })
             }
         },
